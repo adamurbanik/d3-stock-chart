@@ -48,13 +48,13 @@ class StockPriceController {
     this.data.startDate = moment(this.data.startDate).format('YYYY-MM-DD');
     this.data.endDate = moment(this.data.endDate).format('YYYY-MM-DD');
 
-    return "http://query.yahooapis.com/v1/public/yql" +
-      "?q=select%20*%20from%20yahoo.finance.historicaldata%20" +
-      "where%20symbol%20%3D%20%22"
-      + this.data.stock + "%22%20and%20startDate%20%3D%20%22"
-      + this.data.startDate + "%22%20and%20endDate%20%3D%20%22"
-      + this.data.endDate + "%22&format=json&env=store%3A%2F%2F"
-      + "datatables.org%2Falltableswithkeys";
+    return `http://query.yahooapis.com/v1/public/yql` +
+      `?q=select%20*%20from%20yahoo.finance.historicaldata%20` +
+      `where%20symbol%20%3D%20%22`
+      + `${this.data.stock} + %22%20and%20startDate%20%3D%20%22`
+      + `${this.data.startDate} + %22%20and%20endDate%20%3D%20%22`
+      + `${this.data.endDate} + %22&format=json&env=store%3A%2F%2F`
+      + `datatables.org%2Falltableswithkeys`;
   }
 
   update() {
