@@ -1,0 +1,38 @@
+<section>
+    <div class="btn-group" uib-dropdown>
+        <button id="split-button" type="button" class="btn btn-danger">Nasdaq index</button>
+        <button type="button" class="btn btn-danger" uib-dropdown-toggle>
+            <span class="caret"></span>
+            <span class="sr-only">Select NASDAQ index</span>
+        </button>
+        
+        <ul class="dropdown-menu stock" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+            
+            <li ng-repeat="stock in stockPriceCtrl.nasdaqItems" role="menuitem">
+                <a ng-click="stockPriceCtrl.setStock(stock)" >{{ stock }}</a>
+            </li>
+
+        </ul>
+    
+    </div>
+
+    <div class="col-md-3">
+        <p class="input-group">
+            <input type="text" class="form-control" uib-datepicker-popup ng-model="stockPriceCtrl.data.startDate" is-open="stockPriceCtrl.startDate.opened" datepicker-options="stockPriceCtrl.dateOptions" ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="stockPriceCtrl.startDateOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+        </p>
+    </div>
+
+    <div class="col-md-3">
+        <p class="input-group">
+            <input type="text" class="form-control" uib-datepicker-popup ng-model="stockPriceCtrl.data.endDate" is-open="stockPriceCtrl.endDate.opened" datepicker-options="stockPriceCtrl.dateOptions" ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="stockPriceCtrl.endDateOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+        </p>
+    </div>
+
+    <button ng-click="stockPriceCtrl.update()" type="button" class="btn btn-primary">Update</button>
+</section>
