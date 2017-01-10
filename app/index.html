@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="stockApp">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Stock App</title>
+    
+    <link rel="stylesheet" href="/assets/css/vendor.css">
+    <link rel="stylesheet" href="/assets/css/app.css">
+
+</head>
+<body>
+
+    <main class="container">
+        <div class="sidenav-container" ui-view="sidenav"></div>
+        <div class="main-container">
+            <div ui-view="main"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-body">
+        </div>
+    </footer>
+
+  <script type="text/javascript" src="assets/js/vendor.js"></script>
+  <script type="text/javascript" src="assets/js/app.js"></script>
+  
+</body>
+</html>
