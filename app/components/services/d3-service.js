@@ -1,11 +1,12 @@
 function d3Service() {
-  var margin, width, height, parseDate, x, y, xAxis, yAxis, valueline, svg;
+  var margin, width, height, parseDate, x, y, xAxis, yAxis, valueline, svg, labelPositionX;
 
   return {
     prepareD3() {
       margin = { top: 30, right: 40, bottom: 30, left: 50 },
         width = 600 - margin.left - margin.right,
-        height = 270 - margin.top - margin.bottom;
+        height = 270 - margin.top - margin.bottom,
+        xDistance = 3, yDistance = 0.7;
 
       // Parse the date / time
       parseDate = d3.time.format("%Y-%m-%d").parse;
@@ -32,6 +33,15 @@ function d3Service() {
         .attr("transform", "translate("
         + margin.left
         + "," + margin.top + ")");
+
+      svg.append("g")            // Add the X Axis
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+      svg.append("g")            // Add the Y Axis
+        .attr("class", "y axis")
+        .call(yAxis);
     },
 
     getD3Data(url, stock) {
@@ -42,7 +52,8 @@ function d3Service() {
           console.error(error);
           return;
         }
-        console.log(data);
+        console.log(data.query);
+
 
         data.query.results.quote.forEach(function (d) {
           d.date = parseDate(d.Date);
@@ -63,14 +74,7 @@ function d3Service() {
           .attr("class", "line")
           .attr("d", valueline(data.query.results.quote));
 
-        svg.append("g")            // Add the X Axis
-          .attr("class", "x axis")
-          .attr("transform", "translate(0," + height + ")")
-          .call(xAxis);
 
-        svg.append("g")            // Add the Y Axis
-          .attr("class", "y axis")
-          .call(yAxis);
 
         svg.append("text")          // Add the label
           .attr("class", "label")
@@ -82,8 +86,8 @@ function d3Service() {
           .text("high");
 
         svg.append("text")          // Add the title shadow
-          .attr("x", (width / 2))
-          .attr("y", margin.top / 2)
+          .attr("transform", "translate(" + (width + xDistance) + ","
+          + y(data.query.results.quote[0].high + yDistance) + ")")
           .attr("text-anchor", "middle")
           .attr("class", "shadow")
           .style("font-size", "16px")
@@ -91,11 +95,12 @@ function d3Service() {
 
         svg.append("text")          // Add the title
           .attr("class", "stock")
-          .attr("x", (width / 2))
-          .attr("y", margin.top / 2)
+          .attr("transform", "translate(" + (width + xDistance) + ","
+          + y(data.query.results.quote[0].high + yDistance) + ")")
           .attr("text-anchor", "middle")
           .style("font-size", "16px")
           .text(stock);
+
       });
     }
 
