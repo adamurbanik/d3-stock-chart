@@ -1,0 +1,30 @@
+{
+  "name": "d3-stock-chart",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "postinstall": "bower install",
+    "dev": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adamurbanik/d3-stock-chart.git"
+  },
+  "author": "Adam Urbanik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adamurbanik/d3-stock-chart/issues"
+  },
+  "homepage": "https://github.com/adamurbanik/d3-stock-chart#readme",
+  "devDependencies": {
+    "bower": "^1.8.0",
+    "browser-sync": "^2.18.6",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-sass": "^3.1.0",
+    "run-sequence": "^1.2.2"
+  }
+}

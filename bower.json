@@ -1,0 +1,20 @@
+{
+  "name": "d3-stock-chart",
+  "description": "",
+  "main": "gulpfile.js",
+  "authors": [
+    "Adam Urbanik"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/adamurbanik/d3-stock-chart",
+  "devDependencies": {
+    "angular-ui-router": "^0.3.2",
+    "angular": "^1.6.1",
+    "moment": "^2.17.1",
+    "d3": "^3.5.17",
+    "angular-touch": "^1.6.1",
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.1",
+    "angular-bootstrap": "^2.4.0"
+  }
+}
