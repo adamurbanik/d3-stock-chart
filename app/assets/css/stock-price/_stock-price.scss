@@ -48,3 +48,14 @@ text.shadow {
 //   color: #333333;
 //   white-space: nowrap;
 // }
+
+.area {
+  fill: steelblue;
+  clip-path: url(#clip);
+}
+
+.zoom {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}

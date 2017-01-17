@@ -1,1 +1,46 @@
-<div stock-price nasdaq-items=stockCtrl.nasdaqItems></div>
+<section>
+    <div class="btn-group" uib-dropdown>
+        <button id="split-button" type="button" class="btn btn-danger">Nasdaq index</button>
+        <button type="button" class="btn btn-danger" uib-dropdown-toggle>
+            <span class="caret"></span>
+            <span class="sr-only">Select NASDAQ index</span>
+        </button>
+        
+        <ul class="dropdown-menu stock" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+            
+            <li ng-repeat="stock in stockCtrl.nasdaqItems" role="menuitem">
+                <a ng-click="stockCtrl.setStock(stock)" >{{ stock }}</a>
+            </li>
+
+        </ul>
+    
+    </div>
+
+    <div class="col-md-3">
+        <p class="input-group">
+            <input type="text" class="form-control" uib-datepicker-popup datepicker-popup="yyyy-MM-dd" ng-model="stockCtrl.data.startDate"  is-open="stockCtrl.startDate.opened" datepicker-options="stockCtrl.dateOptions" ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="stockCtrl.startDateOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+        </p>
+    </div>
+
+    <div class="col-md-3">
+        <p class="input-group">
+            <input type="text" class="form-control" uib-datepicker-popup ng-model="stockCtrl.data.endDate" is-open="stockCtrl.endDate.opened" datepicker-options="stockCtrl.dateOptions" ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="stockCtrl.endDateOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+        </p>
+    </div>
+
+    <button ng-click="stockCtrl.update()" type="button" class="btn btn-primary">Update</button>
+</section>
+
+
+<svg class="svg-stock" width="960" height="500"></svg>
+<!--<svg class="svg-chart" width="960" height="500"></svg>-->
+
+
+<!--<div stock-price nasdaq-items=stockCtrl.nasdaqItems></div>-->
+

@@ -4,7 +4,7 @@ angular.module('stockApp')
     const stockPath = 'pages/stock';
 
 
-    $urlRouterProvider.otherwise('/app');
+    $urlRouterProvider.otherwise('/app/stock-price');
 
     $stateProvider
       .state('app', {

@@ -17,7 +17,7 @@
             <ul class="nav navbar-nav">
 
                 <li ng-repeat="link in sidenavCtrl.links" ng-class="{ active: sidenavCtrl.getCurrentState(link.state) }">
-                    <a target="_blank" ui-sref="{{ link.state }}">{{ link.name }}</a>
+                    <a ui-sref-opts="{{ link.stateOptions }}" ui-sref="{{ link.state }}">{{ link.name }}</a>
                 </li>
 
             </ul>
@@ -28,3 +28,4 @@
 
 </nav>
 
+                    <!--<a target="_blank" ui-sref="{{ link.state }}">{{ link.name }}</a>-->
