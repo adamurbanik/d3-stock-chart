@@ -92,7 +92,7 @@ class D3Service {
       .scaleExtent([1, Infinity])
       .translateExtent([[0, 0], [this.width, this.height]])
       .extent([[0, 0], [this.width, this.height]])
-      .on("zoom", this.zoomed);
+      .on("zoom", this.zoomed.bind(this));
 
     var self = this;
     this.area = d3.area()
@@ -133,12 +133,12 @@ class D3Service {
       .attr("class", "axis axis--y")
       .call(this.yAxis);
 
-    // this.svg.append("rect")
-    //   .attr("class", "zoom")
-    //   .attr("width", this.width)
-    //   .attr("height", this.height)
-    //   .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
-    //   .call(this.zoom);
+    this.svgChart.append("rect")
+      .attr("class", "zoom")
+      .attr("width", this.width)
+      .attr("height", this.height)
+      .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
+      .call(this.zoom);
   }
   brushed() {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
@@ -151,14 +151,14 @@ class D3Service {
       .scale(this.width / (s[1] - s[0]))
       .translate(-s[0], 0));
   }
-  // zoomed() {
-  //   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
-  //   var t = d3.event.transform;
-  //   x.domain(t.rescaleX(xStock).domain());
-  //   focus.select(".area").attr("d", area);
-  //   focus.select(".axis--x").call(xAxis);
-  //   context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
-  // }
+  zoomed() {
+    if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
+    var t = d3.event.transform;
+    this.x.domain(t.rescaleX(this.xStock).domain());
+    this.focus.select(".area").attr("d", this.area);
+    this.focus.select(".axis--x").call(this.xAxis);
+    this.context.select(".brush").call(this.brush.move, this.x.range().map(t.invertX, t));
+  }
 }
 
 angular
