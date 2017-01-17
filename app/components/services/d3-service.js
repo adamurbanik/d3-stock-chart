@@ -22,7 +22,7 @@ class D3Service {
 
     this.brush = d3.brushX()
       .extent([[0, 0], [this.widthStock, this.heightStock]])
-      .on("brush end", this.brushed);
+      .on("brush end", this.brushed.bind(this));
 
     let self = this;
 
@@ -70,8 +70,6 @@ class D3Service {
         .call(self.brush.move, self.xStock.range());
 
       self.stockData = data;
-      // self.prepareChart();
-      // self.getChartData(data);
 
     });
   }
@@ -142,17 +140,17 @@ class D3Service {
     //   .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
     //   .call(this.zoom);
   }
-  // brushed() {
-  //   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
-  //   if (!focus) return;
-  //   var s = d3.event.selection || xStock.range();
-  //   x.domain(s.map(xStock.invert, xStock));
-  //   focus.select(".area").attr("d", area);
-  //   focus.select(".axis--x").call(xAxis);
-  //   svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
-  //     .scale(width / (s[1] - s[0]))
-  //     .translate(-s[0], 0));
-  // }
+  brushed() {
+    if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
+    if (!this.focus) return;
+    var s = d3.event.selection || this.xStock.range();
+    this.x.domain(s.map(this.xStock.invert, this.xStock));
+    this.focus.select(".area").attr("d", this.area);
+    this.focus.select(".axis--x").call(this.xAxis);
+    this.svgChart.select(".zoom").call(this.zoom.transform, d3.zoomIdentity
+      .scale(this.width / (s[1] - s[0]))
+      .translate(-s[0], 0));
+  }
   // zoomed() {
   //   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
   //   var t = d3.event.transform;
