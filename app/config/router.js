@@ -9,7 +9,6 @@ angular.module('stockApp')
     $stateProvider
       .state('app', {
         url: '/app',
-        // abstract: true,
         views: {
           'sidenav': {
             templateUrl: '/pages/sidenav/app-sidenav.html',
@@ -25,11 +24,9 @@ angular.module('stockApp')
       })
       .state('app.stockPrice', {
         url: '/stock-price',
-        templateUrl: '/pages/stock/partials/stock-prices.html',
       })
       .state('app.chart', {
         url: '/chart',
-        templateUrl: '/pages/chart/partials/chart.html',
       })
       // .state('app.table', {
       //   url: '/table',

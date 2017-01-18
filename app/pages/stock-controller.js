@@ -14,21 +14,6 @@ class StockController {
     ]
 
     this.defineDateDatePickers();
-
-    if (d3Service.stockData) {
-      var self = this;
-      setTimeout(function () {
-        if ($state.includes(STATES.dailyChart)) {
-          d3Service.prepareChart();
-          d3Service.getChartData(d3Service.stockData);
-        }
-        if ($state.includes(STATES.stockPrice)) {
-          d3Service.prepareStock();
-          d3Service.getStockData(self.prepareQuery());
-        }
-      }, 1000);
-    }
-
   }
 
 
@@ -89,6 +74,14 @@ class StockController {
   update() {
     this.d3Service.prepareStock();
     this.data = this.d3Service.getStockData(this.prepareQuery());
+
+    var self = this;
+    setTimeout(function () {
+      self.d3Service.prepareChart();
+      self.d3Service.getChartData(self.d3Service.stockData);
+      self.d3Service.manageTable(self.d3Service.stockData)
+    }, 2000);
+
   }
 
   // date picker
@@ -114,7 +107,6 @@ class StockController {
     this.endDate.opened = true;
   }
 
-
   getDayClass(data) {
     var date = data.date,
       mode = data.mode;
@@ -131,6 +123,11 @@ class StockController {
     }
 
     return '';
+  }
+
+  isCurrentChart() {
+    return this.$state.includes(this.STATES.dailyChart);
+
   }
 
 

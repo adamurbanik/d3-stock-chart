@@ -6,22 +6,22 @@ class SidenavController {
       {
         name: 'Stock Price',
         state: 'app.stockPrice',
-        stateOptions: { inherit: true, reload: true }
+        stateOptions: { inherit: true, reload: false }
       },
       {
         name: 'Chart',
         state: 'app.chart',
-        stateOptions: { inherit: true, reload: true }
+        stateOptions: { inherit: true, reload: false }
       },
       {
         name: 'Table',
         state: 'app.table',
-        stateOptions: { inherit: true, reload: true }
+        stateOptions: { inherit: true, reload: false }
       },
       {
         name: 'Panel',
         state: 'app.panel',
-        stateOptions: { inherit: true, reload: true }
+        stateOptions: { inherit: true, reload: false }
       }
     ]
 
