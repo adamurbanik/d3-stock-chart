@@ -1,9 +1,15 @@
 class D3Service {
   constructor() {
-    this.svg, this.svgChart, this.margin, this.marginStock, this.width, this.height, this.heightStock, this.parseDate,
-      this.x, this.xStock, this.y, this.yStock, this.xAxis, this.yAxis, this.xAxisStock, this.brush, this.zoom, this.area,
-      this.areaStock, this.focus, this.context, this.stockData, this.table, this.thead, this.tbody, this.rows, this.cells;
+    // this.svg, this.svgChart, this.margin, this.marginStock, this.width, this.height, this.heightStock, this.parseDate,
+    //   this.x, this.xStock, this.y, this.yStock, this.xAxis, this.yAxis, this.xAxisStock, this.brush, this.zoom, this.area,
+    //   this.areaStock, this.focus, this.context,  this.table, this.thead, this.tbody, this.rows, this.cells;
 
+    this.countStock = 0;
+    this.countChart = 0;
+    this.firstDrawing = 0;
+    this.domains = {};
+    this.stockData = {};
+    this.selectedStockID = 0;
   }
 
   prepareStock() {
@@ -24,16 +30,16 @@ class D3Service {
       .extent([[0, 0], [this.widthStock, this.heightStock]])
       .on("brush end", this.brushed.bind(this));
 
-
     this.areaStock = d3.area()
       .curve(d3.curveMonotoneX)
       .x(function (d) { return self.xStock(d.date); })
       .y0(this.heightStock)
       .y1(function (d) { return self.yStock(d.high); });
 
+
     this.context = this.svg.append("g")
       .attr("class", "context")
-      .attr("transform", "translate(" + this.marginStock.left + "," + this.marginStock.top + ")");
+      .attr("transform", "translate(" + this.marginStock.left + "," + this.marginStock.top + ")")
   }
 
   getStockData(url) {
@@ -55,21 +61,25 @@ class D3Service {
 
       self.context.append("path")
         .datum(data.query.results.quote)
-        .attr("class", "area")
+        .attr("class", `area${++self.countStock}`)
         .attr("d", self.areaStock);
 
-      self.context.append("g")
-        .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + self.heightStock + ")")
-        .call(self.xAxisStock);
+      if (self.firstDrawing === 0) {
+        self.context.append("g")
+          .attr("class", "axis axis--x")
+          .attr("transform", "translate(0," + self.heightStock + ")")
+          .call(self.xAxisStock);
 
-      self.context.append("g")
-        .attr("class", "brush")
-        .call(self.brush)
-        .call(self.brush.move, self.xStock.range());
-
-      self.stockData = data;
-
+        self.context.append("g")
+          .attr("class", "brush")
+          .call(self.brush)
+          .call(self.brush.move, self.xStock.range());
+      }
+      
+      self.stockData[self.selectedStockID] = data;
+      // self.stockData = data;
+      console.log(self.stockData[self.selectedStockID]);      
+      
     });
   }
 
@@ -82,6 +92,18 @@ class D3Service {
 
     this.x = d3.scaleTime().range([0, this.width]);
     this.y = d3.scaleLinear().range([this.height, 0]);
+    this.domains[this.selectedStockID] = this.x;
+
+    console.log(this.domains)
+
+    // this.domains.xArray.push({
+    //   id: this.selectedStockID,
+    //   x: this.x
+    // });
+    // this.domains.yArray.push({
+    //   id: this.selectedStockID,
+    //   y: this.y
+    // });
 
     this.xAxis = d3.axisBottom(this.x);
     this.yAxis = d3.axisLeft(this.y);
@@ -110,7 +132,8 @@ class D3Service {
       .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
   }
-  getChartData(data) {
+  getChartData() {
+    var data = this.stockData[this.selectedStockID];
     this.x.domain(d3.extent(data.query.results.quote, function (d) { return d.date; }));
     this.y.domain([
       d3.min(data.query.results.quote, function (d) { return d.low }),
@@ -119,81 +142,79 @@ class D3Service {
 
     this.focus.append("path")
       .datum(data.query.results.quote)
-      .attr("class", "area")
+      .attr("class", `area${++this.countChart}`)
       .attr("d", this.area);
 
-    this.focus.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + this.height + ")")
-      .call(this.xAxis);
+    if (this.firstDrawing++ === 0) {
+      this.focus.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + this.height + ")")
+        .call(this.xAxis);
 
-    this.focus.append("g")
-      .attr("class", "axis axis--y")
-      .call(this.yAxis);
+      this.focus.append("g")
+        .attr("class", "axis axis--y")
+        .call(this.yAxis);
 
-    this.svgChart.append("rect")
-      .attr("class", "zoom")
-      .attr("width", this.width)
-      .attr("height", this.height)
-      .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
-      .call(this.zoom);
+      this.svgChart.append("rect")
+        .attr("class", "zoom")
+        .attr("width", this.width)
+        .attr("height", this.height)
+        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
+        .call(this.zoom);
+    }
 
   }
   brushed() {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
     if (!this.focus) return;
     var s = d3.event.selection || this.xStock.range();
-    this.x.domain(s.map(this.xStock.invert, this.xStock));
-    this.focus.select(".area").attr("d", this.area);
+    this.domains[this.selectedStockID].domain(s.map(this.xStock.invert, this.xStock));
+    
+    // this.x.domain(s.map(this.xStock.invert, this.xStock));
+    this.focus.select(`.${this.selectedStockID}`).attr("d", this.area);
     this.focus.select(".axis--x").call(this.xAxis);
     this.svgChart.select(".zoom").call(this.zoom.transform, d3.zoomIdentity
       .scale(this.width / (s[1] - s[0]))
       .translate(-s[0], 0));
-
-    
-    // var xDomain = this.x.domain();
-    // var dataBrushed = this.stockData.query.results.quote.filter(function (d) { 
-    //   return xDomain[0] <= d.date && xDomain[1] >= d.date;
-    // });
 
     this.updateTable();
   }
   zoomed() {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
     var t = d3.event.transform;
-    this.x.domain(t.rescaleX(this.xStock).domain());
-    this.focus.select(".area").attr("d", this.area);
+    this.domains[this.selectedStockID].domain(t.rescaleX(this.xStock).domain());
+    
+    // this.x.domain(t.rescaleX(this.xStock).domain());    
+    this.focus.select(`.${this.selectedStockID}`).attr("d", this.area);
     this.focus.select(".axis--x").call(this.xAxis);
     this.context.select(".brush").call(this.brush.move, this.x.range().map(t.invertX, t));
   }
   updateTable() {
     var columns = ['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'];
-    var xDomain = this.x.domain();
-    var data = this.stockData.query.results.quote.filter(function (d) { 
+    // var xDomain = this.x.domain();
+    var xDomain = this.domains[this.selectedStockID].domain();
+    
+    // this.stockData[this.selectedStockID];
+    var data = this.stockData[this.selectedStockID].query.results.quote.filter(function (d) {
       return xDomain[0] <= d.date && xDomain[1] >= d.date;
     });
 
-    this.thead.remove();
-    this.tbody.remove();
-    this.thead = this.table.append("thead");
-    this.tbody = this.table.append("tbody");
+    // var data = this.stockData.query.results.quote.filter(function (d) {
+    //   return xDomain[0] <= d.date && xDomain[1] >= d.date;
+    // });
 
-    // append the header row
-    this.thead.append("tr")
-      .selectAll("th")
-      .data(columns)
-      .enter()
-      .append("th")
-      .text(function (column) { return column; });
+    console.log(data)
 
+    d3.selectAll("tbody").remove();
+    var tbody = d3.selectAll('.stock-table').append('tbody');
     // create a row for each object in the data
-    this.rows = this.tbody.selectAll("tr")
+    var rows = tbody.selectAll("tr")
       .data(data)
       .enter()
       .append("tr");
 
     // create a cell in each row for each column
-    this.cells = this.rows.selectAll("td")
+    rows.selectAll("td")
       .data(function (row) {
         return columns.map(function (column) {
           return { column: column, value: row[column] };
@@ -205,7 +226,7 @@ class D3Service {
       .html(function (d) { return d.value; });
 
   }
-  tabulate(data, columns) {
+  createTable(data, columns) {
     this.table = d3.select(".stock-table")
     this.thead = this.table.append("thead");
     this.tbody = this.table.append("tbody");
@@ -237,10 +258,14 @@ class D3Service {
       .html(function (d) { return d.value; });
 
   }
-  manageTable(data) {
-    this.tabulate(data.query.results.quote, ['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'])
-
+  manageTable() {
+    var data = this.stockData[this.selectedStockID];
+    this.createTable(data.query.results.quote, ['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'])
   }
+  setStock(stock) {
+    this.selectedStockID = stock;
+  }
+
 
 }
 

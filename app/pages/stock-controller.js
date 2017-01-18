@@ -14,9 +14,27 @@ class StockController {
     ]
 
     this.defineDateDatePickers();
+
+    this.initInput();
+
+    this.d3Service.prepareStock();
+
+    this.selectedStocks = [];
   }
 
+  initInput() {
+    this.startDate = new Date('2013', '08', '10');
+    this.endDate = new Date('2014', '03', '10');
+    this.stock = 'YHOO';
+    this.stockID = 1;
 
+    this.data = {
+      stock: this.stock,
+      startDate: this.startDate,
+      endDate: this.endDate
+    }
+
+  }
 
   defineDateDatePickers() {
     this.dateOptions = {
@@ -45,17 +63,11 @@ class StockController {
       opened: false
     }
 
-    this.data = {
-      stock: 'YHOO',
-      startDate: new Date('2013', '08', '10'),
-      endDate: new Date('2014', '03', '10')
-    };
-
     this.toggleMin();
   }
 
   setStock(stock) {
-    this.data.stock = stock;
+    this.stock = stock;
   }
 
   prepareQuery() {
@@ -71,17 +83,34 @@ class StockController {
       + `datatables.org%2Falltableswithkeys`;
   }
 
-  update() {
-    this.d3Service.prepareStock();
-    this.data = this.d3Service.getStockData(this.prepareQuery());
+  updateInput() {
+    this.data = {
+      stock: this.stock,
+      startDate: this.startDate,
+      endDate: this.endDate
+    }
+  }
+
+  update() { 
+    this.updateInput();
+    this.d3Service.getStockData(this.prepareQuery());
+    this.d3Service.setStock(`area${this.stockID}`);
 
     var self = this;
     setTimeout(function () {
       self.d3Service.prepareChart();
-      self.d3Service.getChartData(self.d3Service.stockData);
-      self.d3Service.manageTable(self.d3Service.stockData)
+      self.d3Service.getChartData();
+      self.d3Service.manageTable()
     }, 2000);
 
+    this.selectedStocks.push({
+      id: `area${this.stockID++}`,
+      name: this.stock
+    });
+  }
+
+  selectStock(stock) { console.log(stock)
+    this.d3Service.setStock(stock.id);
   }
 
   // date picker
