@@ -2,8 +2,6 @@ class StockController {
   constructor(d3Service, $state, STATES) {
     Object.assign(this, { d3Service, $state, STATES });
 
-    console.log(StockController)
-
     this.nasdaqItems = [
       'YHOO',
       'XAX',
@@ -16,8 +14,6 @@ class StockController {
     this.defineDateDatePickers();
 
     this.initInput();
-
-    this.d3Service.prepareStock();
 
     this.selectedStocks = [];
   }
@@ -100,7 +96,7 @@ class StockController {
     setTimeout(function () {
       self.d3Service.prepareChart();
       self.d3Service.getChartData();
-      self.d3Service.manageTable()
+      self.d3Service.manageTable(['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'])
     }, 2000);
 
     this.selectedStocks.push({
