@@ -1,6 +1,6 @@
 class StockController {
-  constructor(d3Service, $state, STATES, requestService, $sce, $q) {
-    Object.assign(this, { d3Service, $state, STATES, requestService, $sce, $q });
+  constructor(d3Service, $state, STATES, requestService, $sce, $q, $scope) {
+    Object.assign(this, { d3Service, $state, STATES, requestService, $sce, $q, $scope });
 
     this.nasdaqItems = [
       'YHOO',
@@ -128,7 +128,9 @@ class StockController {
 
   selectStock(stock) {
     this.d3Service.setStock(stock.id);
+    this.stock = stock.name;
     this.manageCompanyDetails();
+    this.d3Service.updateTable();
   }
 
   // date picker
@@ -180,7 +182,7 @@ class StockController {
 
 }
 
-StockController.$inject = ['d3Service', '$state', 'STATES', 'requestService', '$sce', '$q'];
+StockController.$inject = ['d3Service', '$state', 'STATES', 'requestService', '$sce', '$q', '$scope'];
 
 
 angular
