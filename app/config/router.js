@@ -28,14 +28,12 @@ angular.module('stockApp')
       .state('app.chart', {
         url: '/chart',
       })
-      // .state('app.table', {
-      //   url: '/table',
-      //   templateUrl: '/pages/table/partials/table.html',
-      // })
-      // .state('app.panel', {
-      //   url: '/panel',
-      //   templateUrl: '/pages/panel/partials/panel.html',
-      // })
+      .state('app.table', {
+        url: '/table',
+      })
+      .state('app.panel', {
+        url: '/panel',
+      })
 
       ;
 

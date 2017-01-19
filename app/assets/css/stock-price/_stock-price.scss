@@ -74,6 +74,7 @@ body { font: 12px Arial;}
 
 
 .stock-table {
+  margin-top: 40px;
   width: 900px;
   tr {
     line-height: 3em;
@@ -97,5 +98,32 @@ body { font: 12px Arial;}
       color: #0000cc;
     }
   }
+}
 
+
+.panel-container { 
+  display: inline;
+  ol { 
+    font-style:italic; 
+    font-family:Georgia, Times, serif; 
+    font-size:24px; 
+    // color:#bfe1f1;  
+  }
+  ol li {
+    border-left: 1px solid #999; 
+    float: left;
+    margin-bottom: 60px;
+    margin-left: 0px;
+  }
+  ol li p {
+    &:nth-child(1) {
+      font-weight: bold;
+    }
+    width: 300px;
+    padding:8px; 
+    font-style:normal; 
+    font-family:Arial; 
+    font-size:13px;
+    // color:#eee; 
+  }
 }

@@ -1,6 +1,6 @@
 class StockController {
-  constructor(d3Service, $state, STATES) {
-    Object.assign(this, { d3Service, $state, STATES });
+  constructor(d3Service, $state, STATES, requestService, $sce, $q) {
+    Object.assign(this, { d3Service, $state, STATES, requestService, $sce, $q });
 
     this.nasdaqItems = [
       'YHOO',
@@ -87,7 +87,7 @@ class StockController {
     }
   }
 
-  update() { 
+  update() {
     this.updateInput();
     this.d3Service.getStockData(this.prepareQuery());
     this.d3Service.setStock(`area${this.stockID}`);
@@ -103,10 +103,32 @@ class StockController {
       id: `area${this.stockID++}`,
       name: this.stock
     });
+
+    this.manageCompanyDetails();
+
   }
 
-  selectStock(stock) { console.log(stock)
+  buildQuery() {
+    return `https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D'http%3A%2F%2Fautoc.finance.yahoo.com%2Fautoc%3Fquery%3D${this.stock}%26region%3DEU%26lang%3Den-GB'&format=json`;
+  }
+
+  manageCompanyDetails() {
+    var url = this.buildQuery();
+    this.$sce.trustAsResourceUrl(url);
+
+    let request = this.requestService.init(url);
+    request.jsonp()
+      .then((data) => {
+        let results = JSON.parse(data.data.query.results.body);
+        return this.$q.resolve(results);
+      })
+      .then((results) => this.companyNames = results.ResultSet.Result);
+
+  }
+
+  selectStock(stock) {
     this.d3Service.setStock(stock.id);
+    this.manageCompanyDetails();
   }
 
   // date picker
@@ -150,15 +172,15 @@ class StockController {
     return '';
   }
 
-  isCurrentChart() {
-    return this.$state.includes(this.STATES.dailyChart);
+  isCurrentChart(state) {
+    return this.$state.includes(state);
 
   }
 
 
 }
 
-StockController.$inject = ['d3Service', '$state', 'STATES'];
+StockController.$inject = ['d3Service', '$state', 'STATES', 'requestService', '$sce', '$q'];
 
 
 angular

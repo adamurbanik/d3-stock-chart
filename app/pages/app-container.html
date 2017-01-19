@@ -47,9 +47,22 @@
   </ul>
 </section>
 
-<svg ng-hide="stockCtrl.isCurrentChart('stock-price')" class="svg-stock" width="960" height="200"></svg>
-<svg  class="svg-chart" width="960" height="500"></svg>
-<div class="table-container">
+<svg ng-show="stockCtrl.isCurrentChart('app.stockPrice')" class="svg-stock" width="960" height="200"></svg>
+<svg ng-show="stockCtrl.isCurrentChart('app.chart')" class="svg-chart" width="960" height="500"></svg>
+<div ng-show="stockCtrl.isCurrentChart('app.table')" class="table-container">
     <table class="stock-table"></table>
-<div>
-<!--ng-show="stockCtrl.isCurrentChart('chart')"-->
+</div>
+
+<div ng-show="stockCtrl.isCurrentChart('app.panel')" class="panel-container">
+   <ol>
+      <li ng-repeat="company in stockCtrl.companyNames">
+          <p>{{ company.name }}</p>
+          <p>exch: {{ company.exch }}</p>
+          <p>exch Display: {{ company.exchDisp }}</p>
+          <p>Symbol: {{ company.symbol }}</p>
+          <p>Type: {{ company.typeDisp }}</p>    
+      </li>
+   </ol>
+</div>
+
+
