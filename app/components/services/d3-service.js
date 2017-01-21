@@ -13,6 +13,7 @@ class D3Service {
     this.domainsX = []
     this.domainsY = [];
     this.focuses = [];
+    this.stocksIds = [];
 
     this.prepareStock();
     this.setStock(`area${this.selectedStockID}`)
@@ -87,6 +88,7 @@ class D3Service {
       }
 
       self.stockData[self.selectedStockID] = data;
+      self.stocksIds.push(self.selectedStockID);
 
       promise.resolve(data);
     });
@@ -102,7 +104,6 @@ class D3Service {
 
     this.x = d3.scaleTime().range([0, this.width]);
     this.y = d3.scaleLinear().range([this.height, 0]);
-    this.domains[this.selectedStockID] = this.x;
 
     this.xAxis = d3.axisBottom(this.x);
     this.yAxis = d3.axisLeft(this.y);
@@ -140,6 +141,7 @@ class D3Service {
       d3.min(data.query.results.quote, function (d) { return d.low }),
       d3.max(data.query.results.quote, function (d) { return d.high })
     ]);
+    this.domains[this.selectedStockID] = this.x; 
 
     this.domainsX.push(this.x);
     this.domainsY.push(this.y);
@@ -173,11 +175,6 @@ class D3Service {
         .call(this.brush)
         .call(this.brush.move, this.xStock.range());
 
-      // this.zoom = d3.zoom()
-      //   .scaleExtent([1, Infinity])
-      //   .translateExtent([[0, 0], [this.width, this.height]])
-      //   .extent([[0, 0], [this.width, this.height]])
-      //   .on("zoom", this.zoomed.bind(this));
     }
   }
 
@@ -202,15 +199,14 @@ class D3Service {
       this.svg.selectAll(pathArea).data([data])
         .attr('d', this.areaStock);
 
-
-
+      // update chart
       let x = this.domainsX[index];
       let y = this.domainsY[index];
 
       x.domain(xStock.domain());
       y.domain(yStock.domain());
 
-      
+
       let focusArea = `.area${index + 1}`;
       let selected = this.focus.select(focusArea).attr("d", this.area);
       this.focus.select(".axis--x").call(this.xAxis);
@@ -222,12 +218,45 @@ class D3Service {
     })
 
   }
+  // brushed() {
+  //   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
+  //   if (!this.focus) return;
+
+
+
+
+  //   console.log(this.domains);
+
+  //   // this.domains['area1'].domain(s.map(this.xStock.invert, this.xStock));
+
+  //   this.stocksIds.forEach((stockId, index) => {
+  //     let x = this.domainsX[index]
+  //     let s = d3.event.selection || xStock.range();
+
+  //     x.domain(s.map(this.xStock.invert, this.xStock));
+  //     let selection = this.focus.select(`.${stockId}`).attr("d", this.area);
+  //     console.log(selection)
+  //     this.focus.select(".axis--x").call(this.xAxis);
+  //     this.svgChart.select(".zoom").call(this.zoom.transform, d3.zoomIdentity
+  //       .scale(this.width / (s[1] - s[0]))
+  //       .translate(-s[0], 0));
+
+  //   });
+  //   // this.focus.select(`.area1`).attr("d", this.area);
+  //   // this.focus.select(`.area2`).attr("d", this.area);
+
+  //   // this.focus.select(`.${this.selectedStockID}`).attr("d", this.area);
+
+
+
+  //   // this.updateTable();
+  // }
+
   brushed() {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
     if (!this.focus) return;
     var s = d3.event.selection || this.xStock.range();
 
-    // console.log(this.domains, this.selectedStockID)
     this.domains['area1'].domain(s.map(this.xStock.invert, this.xStock));
     this.focus.select(`.${this.selectedStockID}`).attr("d", this.area);
     this.focus.select(".axis--x").call(this.xAxis);
@@ -235,14 +264,14 @@ class D3Service {
       .scale(this.width / (s[1] - s[0]))
       .translate(-s[0], 0));
 
-    // this.updateTable();
+    this.updateTable();
   }
+
   zoomed() {
     if (!this.domains[this.selectedStockID]) return;
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
     var t = d3.event.transform;
 
-    console.log(this.domains, this.selectedStockID)
     this.domains[this.selectedStockID].domain(t.rescaleX(this.xStock).domain());
 
     this.focus.select(`.${this.selectedStockID}`).attr("d", this.area);
@@ -262,11 +291,13 @@ class D3Service {
       .text(function (column) { return column; });
   }
 
-  updateTable() {
+  updateTable() { 
     var xDomain = this.domains[this.selectedStockID].domain();
     var data = this.stockData[this.selectedStockID].query.results.quote.filter(function (d) {
       return xDomain[0] <= d.date && xDomain[1] >= d.date;
     });
+
+    if(!this.columns) this.columns = ['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'];
 
     this.createTable(data, this.columns);
   }

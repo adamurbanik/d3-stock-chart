@@ -109,26 +109,14 @@ class StockController {
     this.d3Service.getStockData(this.prepareQuery())
       .then((res) => {
         this.stockData.push(res);
-        // this.d3Service.prepareChart();
         this.d3Service.getChartData();
+        this.d3Service.manageTable(['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'])
+
         this.selectedStocks.push({
           id: `area${this.stockID++}`,
           name: this.stock
         });
       });
-
-
-    // var self = this;
-    // setTimeout(function () {
-    //   self.d3Service.prepareChart();
-    //   self.d3Service.getChartData();
-    //   self.d3Service.manageTable(['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'])
-    // }, 2000);
-
-    // this.selectedStocks.push({
-    //   id: `area${this.stockID++}`,
-    //   name: this.stock
-    // });
 
     this.manageCompanyDetails();
 
