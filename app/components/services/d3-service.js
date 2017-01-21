@@ -10,6 +10,8 @@ class D3Service {
     this.selectedStockID = 0;
     this.stockDomainsX = [];
     this.stockDomainsY = [];
+    this.domainsX = []
+    this.domainsY = [];
 
     this.prepareStock();
   }
@@ -81,32 +83,11 @@ class D3Service {
       }
 
       self.stockData[self.selectedStockID] = data;
+      console.log(self.selectedStockID)
+
       promise.resolve(data);
     });
     return promise.promise;
-  }
-
-  updateCharts(stockData, startDate, endDate) {
-    stockData.forEach((data, index) => {
-      data = data.query.results.quote.filter(function (d) {
-        return d.date >= startDate && d.date <= endDate;
-      });
-
-      let xStock = this.stockDomainsX[index]
-      xStock.domain(d3.extent(data, function (d) { return d.date; }));
-      let yStock = this.stockDomainsY[index];
-      yStock.domain([
-        d3.min(data, function (d) { return d.low }),
-        d3.max(data, function (d) { return d.high })
-      ]);
-      let pathArea = `path.area${index + 1}`;
-
-      this.svg.select('g.axis--x').call(this.xAxisStock);
-      this.svg.selectAll(pathArea).data([data])
-        .attr('d', this.areaStock);
-
-    })
-
   }
 
   prepareChart() {
@@ -148,12 +129,16 @@ class D3Service {
 
   }
   getChartData() {
+    console.log(this.stockData, this.selectedStockID)
     var data = this.stockData[this.selectedStockID];
     this.x.domain(d3.extent(data.query.results.quote, function (d) { return d.date; }));
     this.y.domain([
       d3.min(data.query.results.quote, function (d) { return d.low }),
       d3.max(data.query.results.quote, function (d) { return d.high })
     ]);
+
+    this.domainsX.push(this.x);
+    this.domainsY.push(this.y);
 
     this.focus.append("path")
       .datum(data.query.results.quote)
@@ -177,6 +162,68 @@ class D3Service {
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
         .call(this.zoom);
     }
+  }
+
+  updateCharts(stockData, startDate, endDate) {
+    stockData.forEach((data, index) => {
+      data = data.query.results.quote.filter(function (d) {
+        return d.date >= startDate && d.date <= endDate;
+      });
+
+      // update stocks
+      let xStock = this.stockDomainsX[index]
+      let yStock = this.stockDomainsY[index];
+      xStock.domain(d3.extent(data, function (d) { return d.date; }));
+      yStock.domain([
+        d3.min(data, function (d) { return d.low }),
+        d3.max(data, function (d) { return d.high })
+      ]);
+
+      this.svg.select('g.axis--x').call(this.xAxisStock);
+
+      let pathArea = `path.area${index + 1}`;
+      this.svg.selectAll(pathArea).data([data])
+        .attr('d', this.areaStock);
+
+      let focusArea = `.area${index + 1}`;
+      let focus = this.focus.select(focusArea).attr("d", this.area);
+      this.focus.select(".axis--x").call(this.xAxis);
+      
+      let s = this.xStock.range();
+      
+      this.svgChart.select(".zoom").call(this.zoom.transform, d3.zoomIdentity
+        .scale(this.width / (s[1] - s[0]))
+        .translate(-s[0], 0));
+
+
+      // update charts
+
+      // let x = this.domainsX[index];
+      // let y = this.domainsY[index];
+
+      // x.domain(xStock.domain());
+      // y.domain(yStock.domain());
+
+      // // let pathArea = `path.area${index + 1}`;
+      // // this.svg.selectAll(pathArea).data([data])
+      // //   .attr('d', this.areaStock)
+      // // .attr('d', this.area);
+
+      // console.log(x.domain())
+      // console.log(y.domain())
+
+
+      // let focusArea = `focus.area${index + 1}`;
+      // let focus = this.svg.selectAll(focusArea).data([data])
+      //   .attr('d', this.area)
+      // console.log(focus);
+
+
+      // this.svg.select('g.axis--y').call(this.yAxis);
+      // this.svg.select('g.axis--x').call(this.xAxis);
+      // this.svg.select('g.axis--x').call(this.xAxisStock);
+
+    })
 
   }
   brushed() {
@@ -190,7 +237,7 @@ class D3Service {
       .scale(this.width / (s[1] - s[0]))
       .translate(-s[0], 0));
 
-    this.updateTable();
+    // this.updateTable();
   }
   zoomed() {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
@@ -252,6 +299,7 @@ class D3Service {
   }
   setStock(stock) {
     this.selectedStockID = stock;
+    console.log(this.selectedStockID)
   }
 
 
