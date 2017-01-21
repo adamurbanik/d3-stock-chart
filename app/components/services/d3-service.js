@@ -39,11 +39,22 @@ class D3Service {
       .extent([[0, 0], [this.widthStock, this.heightStock]])
       .on("brush end", this.brushed.bind(this));
 
+    // this.areaStock = d3.area()
+    //   .curve(d3.curveMonotoneX)
+    //   .x(function (d) { return self.xStock(d.date); })
+    //   .y0(this.heightStock)
+    //   .y1(function (d) { return self.yStock(d.high); });
+
     this.areaStock = d3.area()
       .curve(d3.curveMonotoneX)
       .x(function (d) { return self.xStock(d.date); })
       .y0(this.heightStock)
       .y1(function (d) { return self.yStock(d.high); });
+
+
+    this.valueline = d3.line()
+      .x(function (d) { return self.xStock(d.date); })
+      .y(function (d) { return self.yStock(d.high); });
 
     this.context = this.svg.append("g")
       .attr("class", "context")
@@ -70,10 +81,16 @@ class D3Service {
       self.stockDomainsX.push(self.xStock);
       self.stockDomainsY.push(self.yStock);
 
-      let path = self.context.append("path")
+      // let path = self.context.append("path")
+      //   .datum(data.query.results.quote)
+      //   .attr("class", `area${self.stockNumber}`)
+      //   .attr("d", self.areaStock);
+
+      let classNames = `line line${self.stockNumber}`;
+      self.context.append("path")
         .datum(data.query.results.quote)
-        .attr("class", `area${self.stockNumber}`)
-        .attr("d", self.areaStock);
+        .attr("class", classNames)
+        .attr("d", self.valueline);
 
       if (self.stockNumber++ === 1) {
         self.context.append("g")
@@ -81,10 +98,6 @@ class D3Service {
           .attr("transform", "translate(0," + self.heightStock + ")")
           .call(self.xAxisStock);
 
-        // self.context.append("g")
-        //   .attr("class", "brush")
-        //   .call(self.brush)
-        //   .call(self.brush.move, self.xStock.range());
       }
 
       self.stockData[self.selectedStockID] = data;
@@ -131,7 +144,6 @@ class D3Service {
       .attr("class", "focus")
       .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-    // this.focuses.push(this.focus);
 
   }
   getChartData() {
@@ -141,7 +153,7 @@ class D3Service {
       d3.min(data.query.results.quote, function (d) { return d.low }),
       d3.max(data.query.results.quote, function (d) { return d.high })
     ]);
-    this.domains[this.selectedStockID] = this.x; 
+    this.domains[this.selectedStockID] = this.x;
 
     this.domainsX.push(this.x);
     this.domainsY.push(this.y);
@@ -151,7 +163,6 @@ class D3Service {
       .attr("class", `area${this.chartNumber}`)
       .attr("d", this.area);
 
-    // this.focuses.push(this.)
 
     if (this.chartNumber++ === 1) {
       this.focus.append("g")
@@ -195,17 +206,16 @@ class D3Service {
 
       this.svg.select('g.axis--x').call(this.xAxisStock);
 
-      let pathArea = `path.area${index + 1}`;
+      let pathArea = `path.line.line${index + 1}`;
       this.svg.selectAll(pathArea).data([data])
-        .attr('d', this.areaStock);
-
+        .attr('d', this.valueline);
+        
       // update chart
       let x = this.domainsX[index];
       let y = this.domainsY[index];
 
       x.domain(xStock.domain());
       y.domain(yStock.domain());
-
 
       let focusArea = `.area${index + 1}`;
       let selected = this.focus.select(focusArea).attr("d", this.area);
@@ -218,39 +228,6 @@ class D3Service {
     })
 
   }
-  // brushed() {
-  //   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
-  //   if (!this.focus) return;
-
-
-
-
-  //   console.log(this.domains);
-
-  //   // this.domains['area1'].domain(s.map(this.xStock.invert, this.xStock));
-
-  //   this.stocksIds.forEach((stockId, index) => {
-  //     let x = this.domainsX[index]
-  //     let s = d3.event.selection || xStock.range();
-
-  //     x.domain(s.map(this.xStock.invert, this.xStock));
-  //     let selection = this.focus.select(`.${stockId}`).attr("d", this.area);
-  //     console.log(selection)
-  //     this.focus.select(".axis--x").call(this.xAxis);
-  //     this.svgChart.select(".zoom").call(this.zoom.transform, d3.zoomIdentity
-  //       .scale(this.width / (s[1] - s[0]))
-  //       .translate(-s[0], 0));
-
-  //   });
-  //   // this.focus.select(`.area1`).attr("d", this.area);
-  //   // this.focus.select(`.area2`).attr("d", this.area);
-
-  //   // this.focus.select(`.${this.selectedStockID}`).attr("d", this.area);
-
-
-
-  //   // this.updateTable();
-  // }
 
   brushed() {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
@@ -291,13 +268,13 @@ class D3Service {
       .text(function (column) { return column; });
   }
 
-  updateTable() { 
+  updateTable() {
     var xDomain = this.domains[this.selectedStockID].domain();
     var data = this.stockData[this.selectedStockID].query.results.quote.filter(function (d) {
       return xDomain[0] <= d.date && xDomain[1] >= d.date;
     });
 
-    if(!this.columns) this.columns = ['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'];
+    if (!this.columns) this.columns = ['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'];
 
     this.createTable(data, this.columns);
   }
@@ -310,7 +287,6 @@ class D3Service {
       .append("tr");
 
     var self = this;
-    // create a cell in each row for each column
     rows.selectAll("td")
       .data(function (row) {
         return self.columns.map(function (column) {

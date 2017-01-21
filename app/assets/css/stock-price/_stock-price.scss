@@ -23,6 +23,18 @@ body { font: 12px Arial;}
   clip-path: url(#clip);
 }
 
+.line1 {
+  fill: none;
+  stroke: $blue;
+  stroke-width: 2px;
+}
+
+.line2 {
+  fill: none;
+  stroke: $orange;
+  stroke-width: 2px;
+}
+
 .full button span {
   background-color: limegreen;
   border-radius: 32px;
