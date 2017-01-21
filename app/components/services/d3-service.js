@@ -1,15 +1,15 @@
 class D3Service {
-  constructor() {
-    // this.svg, this.svgChart, this.margin, this.marginStock, this.width, this.height, this.heightStock, this.parseDate,
-    //   this.x, this.xStock, this.y, this.yStock, this.xAxis, this.yAxis, this.xAxisStock, this.brush, this.zoom, this.area,
-    //   this.areaStock, this.focus, this.context,  this.table, this.thead, this.tbody, this.rows, this.cells;
+  constructor($q) {
+    Object.assign(this, { $q })
 
-    this.countStock = 0;
-    this.countChart = 0;
-    this.firstDrawing = 0;
+    this.stockNumber = 1;
+    this.chartNumber = 1;
+    this.stockDomains = {};
     this.domains = {};
     this.stockData = {};
     this.selectedStockID = 0;
+    this.stockDomainsX = [];
+    this.stockDomainsY = [];
 
     this.prepareStock();
   }
@@ -38,13 +38,13 @@ class D3Service {
       .y0(this.heightStock)
       .y1(function (d) { return self.yStock(d.high); });
 
-
     this.context = this.svg.append("g")
       .attr("class", "context")
       .attr("transform", "translate(" + this.marginStock.left + "," + this.marginStock.top + ")")
   }
 
   getStockData(url) {
+    let promise = this.$q.defer()
     self = this;
     d3.json(url, function (error, data) {
       if (error) throw error;
@@ -60,13 +60,15 @@ class D3Service {
         d3.min(data.query.results.quote, function (d) { return d.low }),
         d3.max(data.query.results.quote, function (d) { return d.high })
       ]);
+      self.stockDomainsX.push(self.xStock);
+      self.stockDomainsY.push(self.yStock);
 
-      self.context.append("path")
+      let path = self.context.append("path")
         .datum(data.query.results.quote)
-        .attr("class", `area${++self.countStock}`)
+        .attr("class", `area${self.stockNumber}`)
         .attr("d", self.areaStock);
 
-      if (self.firstDrawing === 0) {
+      if (self.stockNumber++ === 1) {
         self.context.append("g")
           .attr("class", "axis axis--x")
           .attr("transform", "translate(0," + self.heightStock + ")")
@@ -79,8 +81,32 @@ class D3Service {
       }
 
       self.stockData[self.selectedStockID] = data;
-
+      promise.resolve(data);
     });
+    return promise.promise;
+  }
+
+  updateCharts(stockData, startDate, endDate) {
+    stockData.forEach((data, index) => {
+      data = data.query.results.quote.filter(function (d) {
+        return d.date >= startDate && d.date <= endDate;
+      });
+
+      let xStock = this.stockDomainsX[index]
+      xStock.domain(d3.extent(data, function (d) { return d.date; }));
+      let yStock = this.stockDomainsY[index];
+      yStock.domain([
+        d3.min(data, function (d) { return d.low }),
+        d3.max(data, function (d) { return d.high })
+      ]);
+      let pathArea = `path.area${index + 1}`;
+
+      this.svg.select('g.axis--x').call(this.xAxisStock);
+      this.svg.selectAll(pathArea).data([data])
+        .attr('d', this.areaStock);
+
+    })
+
   }
 
   prepareChart() {
@@ -131,10 +157,10 @@ class D3Service {
 
     this.focus.append("path")
       .datum(data.query.results.quote)
-      .attr("class", `area${++this.countChart}`)
+      .attr("class", `area${this.chartNumber}`)
       .attr("d", this.area);
 
-    if (this.firstDrawing++ === 0) {
+    if (this.chartNumber++ === 1) {
       this.focus.append("g")
         .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + this.height + ")")
@@ -230,6 +256,8 @@ class D3Service {
 
 
 }
+
+D3Service.$inject = ['$q']
 
 angular
   .module('stockApp')

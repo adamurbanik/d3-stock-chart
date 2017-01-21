@@ -16,6 +16,16 @@ class StockController {
     this.initInput();
 
     this.selectedStocks = [];
+
+    this.$scope.$watch(
+      () => this.startDate,
+      () => this.updateCharts());
+
+    this.$scope.$watch(
+      () => this.endDate,
+      () => this.updateCharts());
+
+    this.stockData = [];
   }
 
   initInput() {
@@ -87,17 +97,29 @@ class StockController {
     }
   }
 
+  updateCharts() {
+    if (!this.stockData) return;
+
+    this.updateInput();
+    this.d3Service.updateCharts(this.stockData, this.data.startDate, this.data.endDate);
+  }
+
   update() {
     this.updateInput();
-    this.d3Service.getStockData(this.prepareQuery());
-    this.d3Service.setStock(`area${this.stockID}`);
+    this.d3Service.getStockData(this.prepareQuery())
+      .then((res) => {
+        this.stockData.push(res);
+        this.d3Service.setStock(`area${this.stockID}`);
+        // this.updateStock(res);
+      });
 
-    var self = this;
-    setTimeout(function () {
-      self.d3Service.prepareChart();
-      self.d3Service.getChartData();
-      self.d3Service.manageTable(['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'])
-    }, 2000);
+
+    // var self = this;
+    // setTimeout(function () {
+    //   self.d3Service.prepareChart();
+    //   self.d3Service.getChartData();
+    //   self.d3Service.manageTable(['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'])
+    // }, 2000);
 
     this.selectedStocks.push({
       id: `area${this.stockID++}`,
