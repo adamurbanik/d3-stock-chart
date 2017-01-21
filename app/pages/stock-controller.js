@@ -100,8 +100,7 @@ class StockController {
   updateCharts() {
     if (!this.stockData) return;
 
-    this.updateInput();
-    this.d3Service.updateCharts(this.stockData, this.data.startDate, this.data.endDate);
+    this.d3Service.updateCharts(this.stockData, this.startDate, this.endDate);
   }
 
   update() {
@@ -110,7 +109,7 @@ class StockController {
     this.d3Service.getStockData(this.prepareQuery())
       .then((res) => {
         this.stockData.push(res);
-        this.d3Service.prepareChart();
+        // this.d3Service.prepareChart();
         this.d3Service.getChartData();
         this.selectedStocks.push({
           id: `area${this.stockID++}`,

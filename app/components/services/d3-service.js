@@ -7,13 +7,17 @@ class D3Service {
     this.stockDomains = {};
     this.domains = {};
     this.stockData = {};
-    this.selectedStockID = 0;
+    this.selectedStockID = 1;
     this.stockDomainsX = [];
     this.stockDomainsY = [];
     this.domainsX = []
     this.domainsY = [];
+    this.focuses = [];
 
     this.prepareStock();
+    this.setStock(`area${this.selectedStockID}`)
+    this.prepareChart();
+
   }
 
   prepareStock() {
@@ -76,14 +80,13 @@ class D3Service {
           .attr("transform", "translate(0," + self.heightStock + ")")
           .call(self.xAxisStock);
 
-        self.context.append("g")
-          .attr("class", "brush")
-          .call(self.brush)
-          .call(self.brush.move, self.xStock.range());
+        // self.context.append("g")
+        //   .attr("class", "brush")
+        //   .call(self.brush)
+        //   .call(self.brush.move, self.xStock.range());
       }
 
       self.stockData[self.selectedStockID] = data;
-      console.log(self.selectedStockID)
 
       promise.resolve(data);
     });
@@ -127,9 +130,10 @@ class D3Service {
       .attr("class", "focus")
       .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
+    // this.focuses.push(this.focus);
+
   }
   getChartData() {
-    console.log(this.stockData, this.selectedStockID)
     var data = this.stockData[this.selectedStockID];
     this.x.domain(d3.extent(data.query.results.quote, function (d) { return d.date; }));
     this.y.domain([
@@ -144,6 +148,8 @@ class D3Service {
       .datum(data.query.results.quote)
       .attr("class", `area${this.chartNumber}`)
       .attr("d", this.area);
+
+    // this.focuses.push(this.)
 
     if (this.chartNumber++ === 1) {
       this.focus.append("g")
@@ -161,6 +167,17 @@ class D3Service {
         .attr("height", this.height)
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
         .call(this.zoom);
+
+      this.context.append("g")
+        .attr("class", "brush")
+        .call(this.brush)
+        .call(this.brush.move, this.xStock.range());
+
+      // this.zoom = d3.zoom()
+      //   .scaleExtent([1, Infinity])
+      //   .translateExtent([[0, 0], [this.width, this.height]])
+      //   .extent([[0, 0], [this.width, this.height]])
+      //   .on("zoom", this.zoomed.bind(this));
     }
   }
 
@@ -185,43 +202,22 @@ class D3Service {
       this.svg.selectAll(pathArea).data([data])
         .attr('d', this.areaStock);
 
+
+
+      let x = this.domainsX[index];
+      let y = this.domainsY[index];
+
+      x.domain(xStock.domain());
+      y.domain(yStock.domain());
+
+      
       let focusArea = `.area${index + 1}`;
-      let focus = this.focus.select(focusArea).attr("d", this.area);
+      let selected = this.focus.select(focusArea).attr("d", this.area);
       this.focus.select(".axis--x").call(this.xAxis);
-      
       let s = this.xStock.range();
-      
       this.svgChart.select(".zoom").call(this.zoom.transform, d3.zoomIdentity
         .scale(this.width / (s[1] - s[0]))
         .translate(-s[0], 0));
-
-
-      // update charts
-
-      // let x = this.domainsX[index];
-      // let y = this.domainsY[index];
-
-      // x.domain(xStock.domain());
-      // y.domain(yStock.domain());
-
-      // // let pathArea = `path.area${index + 1}`;
-      // // this.svg.selectAll(pathArea).data([data])
-      // //   .attr('d', this.areaStock)
-      // // .attr('d', this.area);
-
-      // console.log(x.domain())
-      // console.log(y.domain())
-
-
-      // let focusArea = `focus.area${index + 1}`;
-      // let focus = this.svg.selectAll(focusArea).data([data])
-      //   .attr('d', this.area)
-      // console.log(focus);
-
-
-      // this.svg.select('g.axis--y').call(this.yAxis);
-      // this.svg.select('g.axis--x').call(this.xAxis);
-      // this.svg.select('g.axis--x').call(this.xAxisStock);
 
     })
 
@@ -230,7 +226,9 @@ class D3Service {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return;
     if (!this.focus) return;
     var s = d3.event.selection || this.xStock.range();
-    this.domains[this.selectedStockID].domain(s.map(this.xStock.invert, this.xStock));
+
+    // console.log(this.domains, this.selectedStockID)
+    this.domains['area1'].domain(s.map(this.xStock.invert, this.xStock));
     this.focus.select(`.${this.selectedStockID}`).attr("d", this.area);
     this.focus.select(".axis--x").call(this.xAxis);
     this.svgChart.select(".zoom").call(this.zoom.transform, d3.zoomIdentity
@@ -240,8 +238,11 @@ class D3Service {
     // this.updateTable();
   }
   zoomed() {
+    if (!this.domains[this.selectedStockID]) return;
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
     var t = d3.event.transform;
+
+    console.log(this.domains, this.selectedStockID)
     this.domains[this.selectedStockID].domain(t.rescaleX(this.xStock).domain());
 
     this.focus.select(`.${this.selectedStockID}`).attr("d", this.area);
@@ -299,7 +300,6 @@ class D3Service {
   }
   setStock(stock) {
     this.selectedStockID = stock;
-    console.log(this.selectedStockID)
   }
 
 
