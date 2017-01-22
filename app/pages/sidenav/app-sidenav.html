@@ -1,0 +1,30 @@
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    
+    <section class="container">
+  
+        <header class="navbar-header">
+            <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </header>
+  
+        <!--/.navbar-collapse -->
+        <nav class="collapse navbar-collapse">
+            
+            <ul class="nav navbar-nav">
+
+                <li ng-repeat="link in sidenavCtrl.links" ng-class="{ active: sidenavCtrl.getCurrentState(link.state) }">
+                    <a ui-sref-opts="{{ link.stateOptions }}" ui-sref="{{ link.state }}">{{ link.name }}</a>
+                </li>
+
+            </ul>
+
+        </nav>
+  
+  </section>
+
+</nav>
+

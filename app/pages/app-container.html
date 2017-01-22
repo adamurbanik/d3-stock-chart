@@ -1,0 +1,70 @@
+<div ui-view></div>
+
+<section>
+    <div class="btn-group" uib-dropdown>
+        <button id="split-button" type="button" class="btn btn-danger">Nasdaq index</button>
+        <button type="button" class="btn btn-danger" uib-dropdown-toggle>
+            <span class="caret"></span>
+            <span class="sr-only">Select NASDAQ index</span>
+        </button>
+        
+        <ul class="dropdown-menu stock" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+            
+            <li ng-repeat="stock in stockCtrl.nasdaqItems" role="menuitem">
+                <a ng-hide="stockCtrl.checkIfStockInUse(stock)" ng-click="stockCtrl.setStock(stock)" >{{ stock }}</a>
+            </li>
+
+        </ul>
+    
+    </div>
+
+    <div class="col-md-3">
+        <p class="input-group">
+            <input type="text" class="form-control" uib-datepicker-popup datepicker-popup="yyyy-MM-dd" ng-model="stockCtrl.startDate"  is-open="stockCtrl.startDate.opened" datepicker-options="stockCtrl.dateOptions" ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="stockCtrl.startDateOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+        </p>
+    </div>
+
+    <div class="col-md-3">
+        <p class="input-group">
+            <input type="text" class="form-control" uib-datepicker-popup ng-model="stockCtrl.endDate" is-open="stockCtrl.endDate.opened" datepicker-options="stockCtrl.dateOptions" ng-required="true" close-text="Close" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="stockCtrl.endDateOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+        </p>
+    </div>
+
+    <button ng-disabled="stockCtrl.checkIfStockSelected()" ng-click="stockCtrl.update()" type="button" class="btn btn-primary">Update</button>
+</section>
+
+<section class="legend">
+  <ul>
+      <li ng-repeat="stock in stockCtrl.selectedStocks track by $index">
+          <button ng-click="stockCtrl.selectStock(stock)" type="button" class="btn {{stock.id}}">{{ stock.name }}</button>
+      </li>
+  </ul>
+</section>
+
+
+
+<svg ng-show="stockCtrl.isCurrentChart('app.stockPrice')" class="svg-stock" width="960" height="500"></svg>
+<svg ng-show="stockCtrl.isCurrentChart('app.chart')" class="svg-chart" width="960" height="500"></svg>
+<div ng-show="stockCtrl.isCurrentChart('app.table')" class="table-container">
+    <table class="stock-table"></table>
+</div>
+
+<div ng-show="stockCtrl.isCurrentChart('app.panel')" class="panel-container">
+   <ol>
+      <li ng-repeat="company in stockCtrl.companyNames">
+          <p>{{ company.name }}</p>
+          <p>exch: {{ company.exch }}</p>
+          <p>exch Display: {{ company.exchDisp }}</p>
+          <p>Symbol: {{ company.symbol }}</p>
+          <p>Type: {{ company.typeDisp }}</p>    
+      </li>
+   </ol>
+</div>
+
+

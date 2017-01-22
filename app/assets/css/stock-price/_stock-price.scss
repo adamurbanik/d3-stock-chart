@@ -1,0 +1,147 @@
+/*******************************
+STOCK PRICE
+*******************************/
+$blue: #4682b4;
+$orange: #ffa050; 
+$lightOrange: #ffc299;
+$white: #ffffff;
+
+body { font: 12px Arial;}
+
+.area1 {
+  fill: $blue;
+  clip-path: url(#clip);
+}
+
+.area2 {
+  fill: $orange;
+  clip-path: url(#clip);
+}
+
+.area3 {
+  fill: $lightOrange;
+  clip-path: url(#clip);
+}
+
+.line1 {
+  fill: none;
+  stroke: $blue;
+  stroke-width: 2px;
+}
+
+.line2 {
+  fill: none;
+  stroke: $orange;
+  stroke-width: 2px;
+}
+
+.line3 {
+  fill: none;
+  stroke: $lightOrange;
+  stroke-width: 2px;
+}
+
+.full button span {
+  background-color: limegreen;
+  border-radius: 32px;
+  color: black;
+}
+.partially button span {
+  background-color: orange;
+  border-radius: 32px;
+  color: black;
+}
+
+.btn-group {
+  display: block;
+}
+
+.zoom {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+
+.svg-stock, .svg-chart {
+  margin-left: -35px;
+}
+
+.legend ul { 
+  clear: both;
+  margin: 0px;
+  padding-left: 0px;
+  li {
+    display: inline-block;
+    list-style-type: none;
+    margin-top: 10px;
+    padding-right: 20px;
+  }
+  .area1 {
+    background-color: $blue;
+    color: $white;
+  }
+  .area2 {
+    background-color: $orange;
+    color: $white;
+  }
+  .area3 {
+    background-color: $lightOrange;
+    color: $white;
+  }
+}
+
+
+.stock-table {
+  margin-top: 40px;
+  width: 900px;
+  tr {
+    line-height: 3em;
+    background: #eee;
+    margin-bottom: 1px;
+  }
+  tr>th {
+    background:#000000;
+    color:#ffffff;    
+    padding-left: 20px;
+  }
+  tr .data {
+    padding-left: 20px;
+    &:nth-child(3) {
+      color: #ff0000;
+    }
+    &:nth-child(4) {
+      color: #ff0000;
+    }
+    &:nth-child(8) {
+      color: #0000cc;
+    }
+  }
+}
+
+
+.panel-container { 
+  display: inline;
+  ol { 
+    font-style:italic; 
+    font-family:Georgia, Times, serif; 
+    font-size:24px; 
+    // color:#bfe1f1;  
+  }
+  ol li {
+    border-left: 1px solid #999999; 
+    float: left;
+    margin-bottom: 60px;
+    margin-left: 0px;
+  }
+  ol li p {
+    &:nth-child(1) {
+      font-weight: bold;
+    }
+    width: 300px;
+    padding:8px; 
+    font-style:normal; 
+    font-family:Arial; 
+    font-size:13px;
+    // color:#eee; 
+  }
+}
