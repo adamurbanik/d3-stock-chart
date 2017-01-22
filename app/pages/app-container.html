@@ -48,10 +48,10 @@
 </section>
 
 
-<!--ng-show="stockCtrl.isCurrentChart('app.table')"-->
+
 <svg ng-show="stockCtrl.isCurrentChart('app.stockPrice')" class="svg-stock" width="960" height="500"></svg>
 <svg ng-show="stockCtrl.isCurrentChart('app.chart')" class="svg-chart" width="960" height="500"></svg>
-<div  class="table-container">
+<div ng-show="stockCtrl.isCurrentChart('app.table')" class="table-container">
     <table class="stock-table"></table>
 </div>
 

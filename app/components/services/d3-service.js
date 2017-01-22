@@ -136,7 +136,7 @@ class D3Service {
 
 
   }
-  getChartData() { 
+  getChartData() {
     var data = this.stockData[this.selectedStockID];
     this.x.domain(d3.extent(data.query.results.quote, function (d) { return d.date; }));
     this.y.domain([

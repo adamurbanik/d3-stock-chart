@@ -5,7 +5,7 @@ class StockController {
     this.nasdaqItems = [
       'YHOO',
       'SRCE',
-      'AAPL',
+      'KRX',
       'RUI',
       'YAO',
       'YORW',
