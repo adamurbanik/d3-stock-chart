@@ -270,7 +270,7 @@ class D3Service {
     this.createTable(data);
   }
   createTable(data) {
-    if (!this.columns) this.columns = ['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'];
+    if (!this.columns) this.columns = ['Close', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'];
 
     d3.selectAll("tbody").remove();
     var tbody = d3.selectAll('.stock-table').append('tbody');

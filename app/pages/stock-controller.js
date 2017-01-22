@@ -111,7 +111,7 @@ class StockController {
       .then((res) => {
         this.stockData.push(res);
         this.d3Service.getChartData();
-        this.d3Service.manageTable(['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'])
+        this.d3Service.manageTable(['Close', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'])
 
         this.selectedStocks.push({
           id: `area${this.stockID++}`,
