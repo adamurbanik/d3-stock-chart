@@ -149,12 +149,16 @@ class StockController {
     this.d3Service.updateTable();
   }
 
-  checkIfStockInUse(stock) { console.log(this.selectedStocks.filter((item) => item.name === stock).length > 0)
+  checkIfStockInUse(stock) { 
     return (this.selectedStocks.filter((item) => item.name === stock).length > 0);
   }
 
   checkIfStockSelected() {
-    return this.stock === null || this.selectedStocks.length > 3;
+    let invalid = false;
+    if (!this.stock) invalid = true;
+    if (this.selectedStocks.length >= 3) invalid = true;
+
+    return invalid;
   }
 
 
