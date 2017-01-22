@@ -22,7 +22,6 @@ class D3Service {
   }
 
   prepareStock() {
-    let self = this;
     this.svg = d3.select(".svg-stock");
     this.marginStock = { top: 60, right: 20, bottom: 100, left: 40 };
     this.widthStock = +this.svg.attr("width") - this.marginStock.left - this.marginStock.right;
@@ -39,22 +38,16 @@ class D3Service {
       .extent([[0, 0], [this.widthStock, this.heightStock]])
       .on("brush end", this.brushed.bind(this));
 
-    // this.areaStock = d3.area()
-    //   .curve(d3.curveMonotoneX)
-    //   .x(function (d) { return self.xStock(d.date); })
-    //   .y0(this.heightStock)
-    //   .y1(function (d) { return self.yStock(d.high); });
-
     this.areaStock = d3.area()
       .curve(d3.curveMonotoneX)
-      .x(function (d) { return self.xStock(d.date); })
+      .x((d) => this.xStock(d.date))
       .y0(this.heightStock)
-      .y1(function (d) { return self.yStock(d.high); });
+      .y1((d) => this.yStock(d.high));
 
 
     this.valueline = d3.line()
-      .x(function (d) { return self.xStock(d.date); })
-      .y(function (d) { return self.yStock(d.high); });
+      .x((d) => this.xStock(d.date))
+      .y((d) => this.yStock(d.high));
 
     this.context = this.svg.append("g")
       .attr("class", "context")
@@ -63,44 +56,43 @@ class D3Service {
 
   getStockData(url) {
     let promise = this.$q.defer()
-    self = this;
-    d3.json(url, function (error, data) {
+    d3.json(url, (error, data) => {
       if (error) throw error;
 
-      data.query.results.quote.forEach(function (d) {
-        d.date = self.parseDate(d.Date);
+      data.query.results.quote.forEach((d) => {
+        d.date = this.parseDate(d.Date);
         d.high = +d.High;
         d.low = +d.Low;
       });
 
-      self.xStock.domain(d3.extent(data.query.results.quote, function (d) { return d.date; }));
-      self.yStock.domain([
+      this.xStock.domain(d3.extent(data.query.results.quote, function (d) { return d.date; }));
+      this.yStock.domain([
         d3.min(data.query.results.quote, function (d) { return d.low }),
         d3.max(data.query.results.quote, function (d) { return d.high })
       ]);
-      self.stockDomainsX.push(self.xStock);
-      self.stockDomainsY.push(self.yStock);
+      this.stockDomainsX.push(this.xStock);
+      this.stockDomainsY.push(this.yStock);
 
-      // let path = self.context.append("path")
+      // let path = this.context.append("path")
       //   .datum(data.query.results.quote)
-      //   .attr("class", `area${self.stockNumber}`)
-      //   .attr("d", self.areaStock);
+      //   .attr("class", `area${this.stockNumber}`)
+      //   .attr("d", this.areaStock);
 
-      let classNames = `line line${self.stockNumber}`;
-      self.context.append("path")
+      let classNames = `line line${this.stockNumber}`;
+      this.context.append("path")
         .datum(data.query.results.quote)
         .attr("class", classNames)
-        .attr("d", self.valueline);
+        .attr("d", this.valueline);
 
-      if (self.stockNumber++ === 1) {
-        self.context.append("g")
+      if (this.stockNumber++ === 1) {
+        this.context.append("g")
           .attr("class", "axis axis--x")
-          .attr("transform", "translate(0," + self.heightStock + ")")
-          .call(self.xAxisStock);
+          .attr("transform", "translate(0," + this.heightStock + ")")
+          .call(this.xAxisStock);
       }
 
-      self.stockData[self.selectedStockID] = data;
-      self.stocksIds.push(self.selectedStockID);
+      this.stockData[this.selectedStockID] = data;
+      this.stocksIds.push(this.selectedStockID);
 
       promise.resolve(data);
     });
@@ -126,12 +118,11 @@ class D3Service {
       .extent([[0, 0], [this.width, this.height]])
       .on("zoom", this.zoomed.bind(this));
 
-    var self = this;
     this.area = d3.area()
       .curve(d3.curveMonotoneX)
-      .x(function (d) { return self.x(d.date); })
+      .x((d) => this.x(d.date))
       .y0(this.height)
-      .y1(function (d) { return self.y(d.high); });
+      .y1((d) => this.y(d.high));
 
     this.svgChart.append("defs").append("clipPath")
       .attr("id", "clip")
@@ -145,7 +136,7 @@ class D3Service {
 
 
   }
-  getChartData() {
+  getChartData() { 
     var data = this.stockData[this.selectedStockID];
     this.x.domain(d3.extent(data.query.results.quote, function (d) { return d.date; }));
     this.y.domain([
@@ -270,8 +261,7 @@ class D3Service {
       .text(function (column) { return column; });
   }
 
-  updateTable() { console.log('updating table')
-    console.log(this.domains)
+  updateTable() {
     var xDomain = this.domains[this.selectedStockID].domain();
     var data = this.stockData[this.selectedStockID].query.results.quote.filter(function (d) {
       return xDomain[0] <= d.date && xDomain[1] >= d.date;
@@ -289,10 +279,9 @@ class D3Service {
       .enter()
       .append("tr");
 
-    var self = this;
     rows.selectAll("td")
-      .data(function (row) {
-        return self.columns.map(function (column) {
+      .data((row) => {
+        return this.columns.map((column) => {
           return { column: column, value: row[column] };
         });
       })
