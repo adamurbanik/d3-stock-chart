@@ -11,7 +11,7 @@
         <ul class="dropdown-menu stock" uib-dropdown-menu role="menu" aria-labelledby="split-button">
             
             <li ng-repeat="stock in stockCtrl.nasdaqItems" role="menuitem">
-                <a ng-click="stockCtrl.setStock(stock)" >{{ stock }}</a>
+                <a ng-hide="stockCtrl.checkIfStockInUse(stock)" ng-click="stockCtrl.setStock(stock)" >{{ stock }}</a>
             </li>
 
         </ul>
@@ -36,7 +36,7 @@
         </p>
     </div>
 
-    <button ng-click="stockCtrl.update()" type="button" class="btn btn-primary">Update</button>
+    <button ng-disabled="stockCtrl.checkIfStockSelected()" ng-click="stockCtrl.update()" type="button" class="btn btn-primary">Update</button>
 </section>
 
 <section class="legend">
@@ -47,11 +47,11 @@
   </ul>
 </section>
 
-<!--ng-show="stockCtrl.isCurrentChart('app.chart')"-->
-<!--ng-show="stockCtrl.isCurrentChart('app.table')"-->
+
+
 <svg ng-show="stockCtrl.isCurrentChart('app.stockPrice')" class="svg-stock" width="960" height="500"></svg>
-<svg  class="svg-chart" width="960" height="500"></svg>
-<div  class="table-container">
+<svg ng-show="stockCtrl.isCurrentChart('app.chart')" class="svg-chart" width="960" height="500"></svg>
+<div ng-show="stockCtrl.isCurrentChart('app.table')" class="table-container">
     <table class="stock-table"></table>
 </div>
 

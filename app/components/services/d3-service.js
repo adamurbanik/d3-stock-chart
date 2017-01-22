@@ -97,7 +97,6 @@ class D3Service {
           .attr("class", "axis axis--x")
           .attr("transform", "translate(0," + self.heightStock + ")")
           .call(self.xAxisStock);
-
       }
 
       self.stockData[self.selectedStockID] = data;
@@ -209,7 +208,7 @@ class D3Service {
       let pathArea = `path.line.line${index + 1}`;
       this.svg.selectAll(pathArea).data([data])
         .attr('d', this.valueline);
-        
+
       // update chart
       let x = this.domainsX[index];
       let y = this.domainsY[index];
@@ -225,7 +224,10 @@ class D3Service {
         .scale(this.width / (s[1] - s[0]))
         .translate(-s[0], 0));
 
+      if (index === stockData.length - 1) this.updateTable(data);
     })
+
+
 
   }
 
@@ -268,17 +270,18 @@ class D3Service {
       .text(function (column) { return column; });
   }
 
-  updateTable() {
+  updateTable() { console.log('updating table')
+    console.log(this.domains)
     var xDomain = this.domains[this.selectedStockID].domain();
     var data = this.stockData[this.selectedStockID].query.results.quote.filter(function (d) {
       return xDomain[0] <= d.date && xDomain[1] >= d.date;
     });
 
+    this.createTable(data);
+  }
+  createTable(data) {
     if (!this.columns) this.columns = ['Close', 'Date', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'];
 
-    this.createTable(data, this.columns);
-  }
-  createTable(data, columns) {
     d3.selectAll("tbody").remove();
     var tbody = d3.selectAll('.stock-table').append('tbody');
     var rows = tbody.selectAll("tr")

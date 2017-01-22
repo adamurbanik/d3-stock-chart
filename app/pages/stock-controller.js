@@ -5,10 +5,11 @@ class StockController {
     this.nasdaqItems = [
       'YHOO',
       'XAX',
-      'VOLNDX',
       'NQGS',
       'RUI',
-      'MID'
+      'YAO',
+      'YORW',
+      'ATEN'
     ]
 
     this.defineDateDatePickers();
@@ -116,6 +117,7 @@ class StockController {
           id: `area${this.stockID++}`,
           name: this.stock
         });
+        this.stock = null;
       });
 
     this.manageCompanyDetails();
@@ -146,6 +148,15 @@ class StockController {
     this.manageCompanyDetails();
     this.d3Service.updateTable();
   }
+
+  checkIfStockInUse(stock) { console.log(this.selectedStocks.filter((item) => item.name === stock).length > 0)
+    return (this.selectedStocks.filter((item) => item.name === stock).length > 0);
+  }
+
+  checkIfStockSelected() {
+    return this.stock === null || this.selectedStocks.length > 3;
+  }
+
 
   // date picker
   today() {
