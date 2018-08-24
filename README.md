@@ -1,3 +1,5 @@
+Application that renders stock charts using d3. Data comes from external example API.
+
 Gulp task for starting server:
   1. `npm install`
   2. `npm run dev`
