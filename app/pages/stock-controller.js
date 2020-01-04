@@ -1,16 +1,16 @@
 class StockController {
   constructor(d3Service, $state, STATES, requestService, $sce, $q, $scope) {
-    Object.assign(this, { d3Service, $state, STATES, requestService, $sce, $q, $scope });
+    Object.assign(this, {
+      d3Service,
+      $state,
+      STATES,
+      requestService,
+      $sce,
+      $q,
+      $scope
+    });
 
-    this.nasdaqItems = [
-      'YHOO',
-      'SRCE',
-      'KRX',
-      'RUI',
-      'YAO',
-      'YORW',
-      'ATEN'
-    ]
+    this.nasdaqItems = ['YHOO', 'SRCE', 'KRX', 'RUI', 'YAO', 'YORW', 'ATEN'];
 
     this.defineDateDatePickers();
 
@@ -20,11 +20,13 @@ class StockController {
 
     this.$scope.$watch(
       () => this.startDate,
-      () => this.updateCharts());
+      () => this.updateCharts()
+    );
 
     this.$scope.$watch(
       () => this.endDate,
-      () => this.updateCharts());
+      () => this.updateCharts()
+    );
 
     this.stockData = [];
   }
@@ -39,8 +41,7 @@ class StockController {
       stock: this.stock,
       startDate: this.startDate,
       endDate: this.endDate
-    }
-
+    };
   }
 
   defineDateDatePickers() {
@@ -50,7 +51,6 @@ class StockController {
       minDate: new Date(2013, 8, 10),
       startingDay: 1
     };
-
 
     this.inlineOptions = {
       customClass: this.getDayClass,
@@ -68,7 +68,7 @@ class StockController {
 
     this.endDate = {
       opened: false
-    }
+    };
 
     this.toggleMin();
   }
@@ -81,13 +81,17 @@ class StockController {
     this.data.startDate = moment(this.data.startDate).format('YYYY-MM-DD');
     this.data.endDate = moment(this.data.endDate).format('YYYY-MM-DD');
 
-    return `http://query.yahooapis.com/v1/public/yql` +
-      `?q=select%20*%20from%20yahoo.finance.historicaldata%20` +
-      `where%20symbol%20%3D%20%22`
-      + `${this.data.stock} + %22%20and%20startDate%20%3D%20%22`
-      + `${this.data.startDate} + %22%20and%20endDate%20%3D%20%22`
-      + `${this.data.endDate} + %22&format=json&env=store%3A%2F%2F`
-      + `datatables.org%2Falltableswithkeys`;
+    return `https://www.quandl.com/api/v3/datasets/WIKI/FB/data.json?api_key=HsrTDj8DQkeWj6AXWwpq`;
+
+    // return (
+    //   `http://query.yahooapis.com/v1/public/yql` +
+    //   `?q=select%20*%20from%20yahoo.finance.historicaldata%20` +
+    //   `where%20symbol%20%3D%20%22` +
+    //   `${this.data.stock} + %22%20and%20startDate%20%3D%20%22` +
+    //   `${this.data.startDate} + %22%20and%20endDate%20%3D%20%22` +
+    //   `${this.data.endDate} + %22&format=json&env=store%3A%2F%2F` +
+    //   `datatables.org%2Falltableswithkeys`
+    // );
   }
 
   updateInput() {
@@ -95,7 +99,7 @@ class StockController {
       stock: this.stock,
       startDate: this.startDate,
       endDate: this.endDate
-    }
+    };
   }
 
   updateCharts() {
@@ -107,21 +111,27 @@ class StockController {
   update() {
     this.updateInput();
     this.d3Service.setStock(`area${this.stockID}`);
-    this.d3Service.getStockData(this.prepareQuery())
-      .then((res) => {
-        this.stockData.push(res);
-        this.d3Service.getChartData();
-        this.d3Service.manageTable(['Close', 'High', 'Low', 'Open', 'Symbol', 'Volume', 'Date'])
+    this.d3Service.getStockData(this.prepareQuery()).then(res => {
+      this.stockData.push(res);
+      this.d3Service.getChartData();
+      this.d3Service.manageTable([
+        'Close',
+        'High',
+        'Low',
+        'Open',
+        'Symbol',
+        'Volume',
+        'Date'
+      ]);
 
-        this.selectedStocks.push({
-          id: `area${this.stockID++}`,
-          name: this.stock
-        });
-        this.stock = null;
+      this.selectedStocks.push({
+        id: `area${this.stockID++}`,
+        name: this.stock
       });
+      this.stock = null;
+    });
 
-    this.manageCompanyDetails();
-
+    // this.manageCompanyDetails();
   }
 
   buildQuery() {
@@ -133,24 +143,24 @@ class StockController {
     this.$sce.trustAsResourceUrl(url);
 
     let request = this.requestService.init(url);
-    request.jsonp()
-      .then((data) => {
+    request
+      .jsonp()
+      .then(data => {
         let results = JSON.parse(data.data.query.results.body);
         return this.$q.resolve(results);
       })
-      .then((results) => this.companyNames = results.ResultSet.Result);
-
+      .then(results => (this.companyNames = results.ResultSet.Result));
   }
 
   selectStock(stock) {
     this.d3Service.setStock(stock.id);
     this.stock = stock.name;
-    this.manageCompanyDetails();
+    // this.manageCompanyDetails();
     this.d3Service.updateTable();
   }
 
-  checkIfStockInUse(stock) { 
-    return (this.selectedStocks.filter((item) => item.name === stock).length > 0);
+  checkIfStockInUse(stock) {
+    return this.selectedStocks.filter(item => item.name === stock).length > 0;
   }
 
   checkIfStockSelected() {
@@ -161,25 +171,23 @@ class StockController {
     return invalid;
   }
 
-
   // date picker
   today() {
     this.dt = new Date();
-  };
+  }
 
   clear() {
     this.dt = null;
-  };
-
+  }
 
   toggleMin() {
     this.inlineOptions.minDate = this.inlineOptions.minDate ? null : new Date();
     this.dateOptions.minDate = this.inlineOptions.minDate;
-  };
+  }
 
   startDateOpen() {
     this.startDate.opened = true;
-  };
+  }
 
   endDateOpen() {
     this.endDate.opened = true;
@@ -205,18 +213,17 @@ class StockController {
 
   isCurrentChart(state) {
     return this.$state.includes(state);
-
   }
-
-
 }
 
-StockController.$inject = ['d3Service', '$state', 'STATES', 'requestService', '$sce', '$q', '$scope'];
+StockController.$inject = [
+  'd3Service',
+  '$state',
+  'STATES',
+  'requestService',
+  '$sce',
+  '$q',
+  '$scope'
+];
 
-
-angular
-  .module('stockApp')
-  .controller('stockController', StockController)
-
-
-
+angular.module('stockApp').controller('stockController', StockController);
